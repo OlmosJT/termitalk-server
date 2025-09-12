@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'io.olmosjt'
-version = '1.0'
+version = '2.0'
 
 repositories {
     mavenCentral()
@@ -35,5 +35,5 @@ test {
 shadowJar {
     archiveBaseName = 'termitalk-server'
     archiveClassifier = ''
-    archiveVersion = '1.0'
+    archiveVersion = '2.0'
 }

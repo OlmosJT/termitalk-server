@@ -11,12 +11,12 @@ public class WhoCommand implements Command {
     var currentRoom = client.getCurrentRoom();
 
     if(currentRoom.isEmpty()) {
-      client.send(Message.error("You are not in a room."));
+      client.send(Message.serverNok(client.getUser().username(),"You are not in a room."));
       return;
     }
 
     var room = currentRoom.get();
     String userList = String.join(", ", room.getMemberNames());
-    client.send(Message.system("Users in '" + room.getName() + "': " + userList));
+    client.send(Message.serverOk(client.getUser().username(), "Users in '" + room.getName() + "': " + userList));
   }
 }

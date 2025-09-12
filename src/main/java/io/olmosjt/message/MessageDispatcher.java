@@ -27,7 +27,7 @@ public class MessageDispatcher {
 
   public void dispatch(Message message) {
     switch (message.type()) {
-      case SYSTEM, ERROR -> broadcast(message);
+      case SYSTEM, OK, NOK -> broadcast(message);
       case USER -> broadcastToRoom(message);
       case PRIVATE -> sendPrivate(message);
       default -> {}
@@ -59,7 +59,7 @@ public class MessageDispatcher {
       // If recipient not found, send an error back to the sender
       ClientHandler sender = clientManager.get(message.sender());
       if (sender != null) {
-        sender.send(Message.error("User '" + message.recipient() + "' not found or is offline."));
+        sender.send(Message.serverNok(sender.getUser().username(),"User '" + message.recipient() + "' not found or is offline."));
       }
     }
   }

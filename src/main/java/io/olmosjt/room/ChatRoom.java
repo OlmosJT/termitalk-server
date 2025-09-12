@@ -28,7 +28,7 @@ public class ChatRoom {
    */
   public void addMember(ClientHandler client) {
     members.add(client);
-    broadcast(Message.system("'" + client.getUser().username() + "' has joined the room."));
+    broadcast(Message.serverOk(client.getUser().username(), "'" + client.getUser().username() + "' has joined the room."));
   }
 
   /**
@@ -38,7 +38,7 @@ public class ChatRoom {
   public void removeMember(ClientHandler client) {
     boolean removed = members.remove(client);
     if (removed) {
-      broadcast(Message.system("'" + client.getUser().username() + "' has left the room."));
+      broadcast(Message.serverOk(client.getUser().username(),"'" + client.getUser().username() + "' has left the room."));
     }
   }
 

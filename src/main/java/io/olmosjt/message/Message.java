@@ -18,18 +18,30 @@ public record Message(
     if (timestamp == null) timestamp = Instant.now();
   }
 
-  public static Message system(String content) {
-    return new Message(MessageType.SYSTEM, "SYSTEM", null, content, Instant.now());
+  /**
+   * OK|SYSTEM|username|content
+   */
+  public static Message serverOk(String username, String content) {
+    return new Message(MessageType.OK, "SYSTEM", username, content, Instant.now());
   }
 
-  public static Message error(String content) {
-    return new Message(MessageType.ERROR, "SYSTEM", null, content, Instant.now());
+  /**
+   * NOK|SYSTEM|username|content
+   */
+  public static Message serverNok(String username, String content) {
+    return new Message(MessageType.NOK, "SYSTEM", username, content, Instant.now());
   }
 
+  /**
+   * PRIVATE|from|to|content
+   */
   public static Message privateMsg(String from, String to, String content) {
     return new Message(MessageType.PRIVATE, from, to, content, Instant.now());
   }
 
+  /**
+   * USER|from|null|content
+   */
   public static Message userMsg(String from, String content) {
     return new Message(MessageType.USER, from, null, content, Instant.now());
   }

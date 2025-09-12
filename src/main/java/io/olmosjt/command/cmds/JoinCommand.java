@@ -12,26 +12,27 @@ public class JoinCommand implements Command {
   @Override
   public void execute(ServerContext context, ClientHandler client, String payload) {
     if (!client.isLoggedIn()) {
-      client.send(Message.error("You must be logged in to join a room."));
+      client.send(Message.serverNok(client.getUser().username(), "You must be logged in to join a room."));
       return;
     }
     if (payload == null || payload.isBlank()) {
-      client.send(Message.error("Usage: JOIN:<room_id>"));
+      client.send(Message.serverNok(client.getUser().username(), "Usage: JOIN:<room_id>"));
       return;
     }
     try {
       int roomId = Integer.parseInt(payload);
       Optional<ChatRoom> roomToJoin = context.roomManager().getRoom(roomId);
       if (roomToJoin.isEmpty()) {
-        client.send(Message.error("Room '" + payload + "' does not exist."));
+        client.send(Message.serverNok(client.getUser().username(), "Room '" + payload + "' does not exist."));
         return;
       }
       client.getCurrentRoom().ifPresent(oldRoom -> oldRoom.removeMember(client));
       ChatRoom newRoom = roomToJoin.get();
       client.setCurrentRoom(newRoom);
       newRoom.addMember(client);
+      client.send(Message.serverOk(client.getUser().username(), "Joined room '" + newRoom.getName() + "'."));
     } catch (NumberFormatException e) {
-      client.send(Message.error("NumberFormatException. Usage: JOIN:<room_id>"));
+      client.send(Message.serverNok(client.getUser().username(), "NumberFormatException. Usage: JOIN:<room_id>"));
     }
   }
 }

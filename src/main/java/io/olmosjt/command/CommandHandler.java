@@ -3,7 +3,7 @@ package io.olmosjt.command;
 import io.olmosjt.ServerContext;
 import io.olmosjt.message.Message;
 import io.olmosjt.protocol.CommandParser;
-import io.olmosjt.protocol.ParsedCommand;
+import io.olmosjt.protocol.ParsedRequest;
 import io.olmosjt.server.ClientHandler;
 
 import java.util.EnumMap;
@@ -30,16 +30,16 @@ public class CommandHandler {
    * @param raw     The raw input string from the client.
    */
   public void handle(ServerContext context, ClientHandler client, String raw) {
-    // COMMAND:PAYLOAD
-    ParsedCommand parsed = CommandParser.parse(raw);
-
-    if(parsed == null) { return; }
+    // REQ|COMMAND:PAYLOAD
+    ParsedRequest parsed = CommandParser.parse(raw);
 
     var command = commands.get(parsed.type());
     if (command != null) {
       command.execute(context, client, parsed.payload());
     } else {
-      client.send(Message.error("Unknown command: " + raw));
+      String username = client.isLoggedIn() ? client.getUser().username() : null;
+      client.send(Message.serverNok(username, "Unknown command or malformed request. Expected format: "
+              + CommandParser.REQUEST_FORMAT));
     }
   }
 

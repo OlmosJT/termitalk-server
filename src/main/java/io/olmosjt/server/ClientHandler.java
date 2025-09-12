@@ -48,7 +48,7 @@ public class ClientHandler implements Runnable {
       in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 
-      send(Message.system("Welcome! Please log in with: LOGIN:<username>"));
+      send(Message.serverOk(null, "Welcome! Please log in with: REQ|LOGIN|<username>"));
 
       String line;
       while (running.get() && (line = in.readLine()) != null) {

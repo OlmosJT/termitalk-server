@@ -12,6 +12,6 @@ public class ListRoomsCommand implements Command {
   public void execute(ServerContext context, ClientHandler client, String payload) {
     Set<String> roomNames = context.roomManager().listRoomNames();
     String roomList = roomNames.isEmpty() ? "No rooms available." : String.join(", ", roomNames);
-    client.send(Message.system("Available rooms: " + roomList));
+    client.send(Message.serverOk(client.getUser().username(), "Available rooms: " + roomList));
   }
 }

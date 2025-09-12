@@ -8,6 +8,7 @@ import io.olmosjt.server.ClientHandler;
 public class UnknownCommand implements Command {
   @Override
   public void execute(ServerContext context, ClientHandler client, String payload) {
-    client.send(Message.error("Unknown or unsupported command."));
+    client.send(Message.serverNok(client.isLoggedIn() ? client.getUser().username() : null,
+            "Unknown or unsupported command."));
   }
 }

@@ -12,9 +12,9 @@ public class HelpCommand implements Command {
     StringBuilder help = new StringBuilder("Available commands:\n");
     for (CommandType c : CommandType.values()) {
       if (c != CommandType.UNKNOWN) {
-        help.append("  ").append(c.name()).append(": ").append(c.getDescription()).append("\n");
+        help.append("  ").append(c.name()).append(": ").append(c.getDescription()).append(",");
       }
     }
-    client.send(Message.system(help.toString()));
+    client.send(Message.serverOk(client.getUser().username(), help.toString()));
   }
 }

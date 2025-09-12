@@ -8,6 +8,6 @@ import io.olmosjt.server.ClientHandler;
 public class NickCommand implements Command {
   @Override
   public void execute(ServerContext context, ClientHandler client, String payload) {
-    client.send(Message.error("NICK not supported yet."));
+    client.send(Message.serverNok(client.getUser().username(),"NICK not supported yet."));
   }
 }
