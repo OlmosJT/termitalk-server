@@ -1,8 +1,5 @@
 package io.olmosjt.server;
 
-import io.olmosjt.user.User;
-
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

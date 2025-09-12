@@ -2,6 +2,8 @@ package io.olmosjt.command;
 
 import io.olmosjt.ServerContext;
 import io.olmosjt.message.Message;
+import io.olmosjt.protocol.CommandParser;
+import io.olmosjt.protocol.ParsedCommand;
 import io.olmosjt.server.ClientHandler;
 
 import java.util.EnumMap;
@@ -28,21 +30,18 @@ public class CommandHandler {
    * @param raw     The raw input string from the client.
    */
   public void handle(ServerContext context, ClientHandler client, String raw) {
-    if (raw == null || raw.isBlank()) {
-      return;
-    }
+    // COMMAND:PAYLOAD
+    ParsedCommand parsed = CommandParser.parse(raw);
 
-    String[] parts = raw.split(":", 2);
-    CommandType type = CommandType.fromString(parts[0]);
-    String payload = (parts.length > 1) ? parts[1].trim() : "";
+    if(parsed == null) { return; }
 
-    Command command = commands.get(type);
+    var command = commands.get(parsed.type());
     if (command != null) {
-      // Pass the context to the command's execute method
-      command.execute(context, client, payload);
+      command.execute(context, client, parsed.payload());
     } else {
-      client.send(Message.error("Unknown command: " + parts[0]));
+      client.send(Message.error("Unknown command: " + raw));
     }
   }
+
 }
 

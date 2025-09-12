@@ -1,8 +1,8 @@
 package io.olmosjt.server;
 
 import io.olmosjt.ServerContext;
-import io.olmosjt.command.CommandHandler;
 import io.olmosjt.message.Message;
+import io.olmosjt.protocol.MessageEncoder;
 import io.olmosjt.room.ChatRoom;
 import io.olmosjt.user.User;
 import io.olmosjt.user.UserStatus;
@@ -73,7 +73,7 @@ public class ClientHandler implements Runnable {
 
   public void send(Message message) {
     if (out != null && running.get()) {
-      out.println(serialize(message));
+      out.println(MessageEncoder.encode(message));
     }
   }
 
@@ -115,19 +115,5 @@ public class ClientHandler implements Runnable {
     } catch (IOException e) {
       LoggerUtil.error("Error closing client: " + e.getMessage());
     }
-  }
-
-  /**
-   * A more robust serialization format.
-   * Using pipes | as delimiters is safer than colons.
-   */
-  private String serialize(Message message) {
-    // Format: TYPE|SENDER|RECIPIENT|CONTENT
-    return String.join("|",
-            message.type().name(),
-            message.sender(),
-            message.recipient() != null ? message.recipient() : "",
-            message.content()
-    );
   }
 }
