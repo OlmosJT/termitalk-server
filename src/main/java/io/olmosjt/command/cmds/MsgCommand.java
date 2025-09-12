@@ -25,6 +25,7 @@ public class MsgCommand implements Command {
       return;
     }
     Message message = Message.userMsg(client.getUser().username(), payload);
-    roomOpt.get().broadcast(message);
+//    roomOpt.get().broadcast(message);
+    context.dispatcher().dispatch(message); // IT SHOULD BE DISPATCHED TO THE CURRENT ROOM INSTEAD OF BROADCASTING TO ALL ROOM MEMBERS
   }
 }

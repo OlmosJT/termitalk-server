@@ -52,7 +52,8 @@ public class ClientHandler implements Runnable {
 
       String line;
       while (running.get() && (line = in.readLine()) != null) {
-        // Pass the context to the command handler
+        String who = isLoggedIn() ? getUser().username() : "(unauthenticated)";
+        LoggerUtil.info("REQ raw from=" + who + " line=" + line);
         context.commandHandler().handle(context, this, line);
       }
     } catch (IOException e) {
@@ -73,7 +74,19 @@ public class ClientHandler implements Runnable {
 
   public void send(Message message) {
     if (out != null && running.get()) {
-      out.println(MessageEncoder.encode(message));
+      String encoded = MessageEncoder.encode(message);
+      String to = isLoggedIn() ? getUser().username() : "(unauthenticated)";
+      String content = message.content();
+      String preview = content == null ? "" : (content.length() <= 120 ? content : content.substring(0, 120) + "...");
+
+      LoggerUtil.info("RESP to=" + to +
+              " type=" + message.type() +
+              " from=" + message.sender() +
+              " rcpt=" + (message.recipient() == null ? "" : message.recipient()) +
+              " content.len=" + (content == null ? 0 : content.length()) +
+              " content.preview=\"" + preview + "\"");
+
+      out.println(encoded);
     }
   }
 

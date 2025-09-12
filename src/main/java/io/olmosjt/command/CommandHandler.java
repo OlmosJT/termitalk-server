@@ -5,6 +5,7 @@ import io.olmosjt.message.Message;
 import io.olmosjt.protocol.CommandParser;
 import io.olmosjt.protocol.ParsedRequest;
 import io.olmosjt.server.ClientHandler;
+import io.olmosjt.util.LoggerUtil;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -33,10 +34,21 @@ public class CommandHandler {
     // REQ|COMMAND:PAYLOAD
     ParsedRequest parsed = CommandParser.parse(raw);
 
+    String who = client.isLoggedIn() ? client.getUser().username() : "(unauthenticated)";
+    String payload = parsed.payload();
+    String preview = payload == null ? "" : (payload.length() <= 120 ? payload : payload.substring(0, 120) + "...");
+
+    LoggerUtil.info("REQ parsed from=" + who +
+            " type=" + parsed.type() +
+            " payload.len=" + (payload == null ? 0 : payload.length()) +
+            " payload.preview=\"" + preview + "\"");
+
     var command = commands.get(parsed.type());
     if (command != null) {
+      LoggerUtil.debug("DISPATCH command type=" + parsed.type() + " to=" + command.getClass().getSimpleName());
       command.execute(context, client, parsed.payload());
     } else {
+      LoggerUtil.warn("NOHANDLER type=" + parsed.type() + " from=" + who);
       String username = client.isLoggedIn() ? client.getUser().username() : null;
       client.send(Message.serverNok(username, "Unknown command or malformed request. Expected format: "
               + CommandParser.REQUEST_FORMAT));

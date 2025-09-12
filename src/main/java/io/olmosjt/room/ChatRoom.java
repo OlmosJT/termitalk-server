@@ -2,6 +2,7 @@ package io.olmosjt.room;
 
 import io.olmosjt.message.Message;
 import io.olmosjt.server.ClientHandler;
+import io.olmosjt.util.LoggerUtil;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +29,8 @@ public class ChatRoom {
    */
   public void addMember(ClientHandler client) {
     members.add(client);
+    LoggerUtil.info("ROOM join roomId=" + id + " roomName=" + name + " user=" + client.getUser().username() +
+            " membersNow=" + members.size());
     broadcast(Message.serverOk(client.getUser().username(), "'" + client.getUser().username() + "' has joined the room."));
   }
 
@@ -38,6 +41,8 @@ public class ChatRoom {
   public void removeMember(ClientHandler client) {
     boolean removed = members.remove(client);
     if (removed) {
+      LoggerUtil.info("ROOM leave roomId=" + id + " roomName=" + name + " user=" + client.getUser().username() +
+              " membersNow=" + members.size());
       broadcast(Message.serverOk(client.getUser().username(),"'" + client.getUser().username() + "' has left the room."));
     }
   }

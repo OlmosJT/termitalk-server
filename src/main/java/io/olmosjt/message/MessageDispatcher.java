@@ -2,6 +2,7 @@ package io.olmosjt.message;
 
 import io.olmosjt.server.ClientHandler;
 import io.olmosjt.server.ClientManager;
+import io.olmosjt.util.LoggerUtil;
 
 /**
  * Responsible for routing messages between connected clients.
@@ -35,14 +36,36 @@ public class MessageDispatcher {
   }
 
   private void broadcast(Message message) {
+    int count = 0;
     for (ClientHandler ch : clientManager.allClients()) {
       ch.send(message);
+      count++;
     }
+    LoggerUtil.info("ROUTE broadcast type=" + message.type() +
+            " from=" + message.sender() +
+            " delivered=" + count);
   }
 
   private void broadcastToRoom(Message message) {
-    // TODO: integrate with ChatRoom logic
-    broadcast(message); // fallback: send to all
+    ClientHandler sender = clientManager.get(message.sender());
+    if (sender != null) {
+      sender.getCurrentRoom().ifPresentOrElse(
+              room -> {
+                room.broadcast(message);
+                LoggerUtil.info("ROUTE room type=" + message.type() +
+                        " from=" + message.sender() +
+                        " roomId=" + room.getId() +
+                        " roomName=" + room.getName() +
+                        " members=" + room.getMemberNames().size());
+              },
+              () -> {
+                LoggerUtil.warn("ROUTE room failed: sender not in a room. from=" + message.sender());
+                sender.send(Message.serverNok(message.sender(), "You are not in a room."));
+              }
+      );
+    } else {
+      LoggerUtil.warn("ROUTE room failed: unknown sender=" + message.sender());
+    }
   }
 
   private void sendPrivate(Message message) {
@@ -55,11 +78,14 @@ public class MessageDispatcher {
       if (sender != null && !sender.equals(target)) {
         sender.send(message);
       }
+      LoggerUtil.info("ROUTE private from=" + message.sender() + " to=" + message.recipient());
     } else {
-      // If recipient not found, send an error back to the sender
       ClientHandler sender = clientManager.get(message.sender());
+      LoggerUtil.warn("ROUTE private failed: recipient offline or not found. from=" + message.sender() +
+              " to=" + message.recipient());
       if (sender != null) {
-        sender.send(Message.serverNok(sender.getUser().username(),"User '" + message.recipient() + "' not found or is offline."));
+        sender.send(Message.serverNok(sender.getUser().username(),
+                "User '" + message.recipient() + "' not found or is offline."));
       }
     }
   }
