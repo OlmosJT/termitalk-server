@@ -69,18 +69,17 @@ Configuration is provided by `ServerConfig.defaultConfig()` and currently hardco
 - Canonical format parsed by the server:
   - `REQ|COMMAND:PAYLOAD`
 - Notes:
-  - The `REQ|` prefix is mandatory for requests.
-  - Some historical traces or logs may show examples like `REQ|LOGIN|<username>`. The parser expects a colon after the command, i.e., `REQ|LOGIN:<username>`.
-  - If a command has no payload, send `REQ|COMMAND:` or `REQ|COMMAND`.
+  - The `REQ|` prefix is mandatory for requests. e.g `REQ|LOGIN|<username>`
+  - If a command has no payload, send `REQ|COMMAND|` or `REQ|COMMAND`.
 
 Examples:
-- `REQ|LOGIN:Alice`
-- `REQ|LIST_ROOMS:`
-- `REQ|CREATE_ROOM:devs`
+- `REQ|LOGIN|Alice`
+- `REQ|LIST_ROOMS`
+- `REQ|CREATE_ROOM|devs`
 - `REQ|JOIN:100`
-- `REQ|MSG:Hello room!`
-- `REQ|PRIVMSG:Bob Hey Bob`
-- `REQ|QUIT:`
+- `REQ|MSG|Hello room!`
+- `REQ|PRIVMSG|Bob Hey Bob`
+- `REQ|QUIT`
 
 #### Response format (Server → Client)
 - All responses/events are pipe-delimited with 4 fields:
@@ -95,7 +94,7 @@ Examples:
 - `NOK|SYSTEM|Alice|You are not in a room.`
 - `SYSTEM|SYSTEM||'Alice' has joined the room.`
 - `USER|Alice||Hello everyone!`
-- `PRIVATE|Alice|Bob|Hey Bob`
+- `PRIVATE|Alice|Bob Hey Bob`
 
 Parsing tip: split inbound lines into at most 4 parts by the first three `|` delimiters; treat any extra `|` characters as part of the content.
 
@@ -112,7 +111,7 @@ Send all commands as requests with the `REQ|` prefix.
 
 - NICK
   - `REQ|NICK:<new_username>`
-  - Changes your nickname (subject to the same validation and uniqueness). If not available/implemented in your version, server may return `NOK`.
+  - Changes your nickname (subject to the same validation and uniqueness). If not available/implemented in this version, server returns `NOK`.
 
 - LIST_ROOMS
   - `REQ|LIST_ROOMS:`
@@ -125,11 +124,11 @@ Send all commands as requests with the `REQ|` prefix.
 
 - JOIN
   - `REQ|JOIN:<room_id>`
-  - Leaves your current room (if any) and joins the specified room
+  - Leaves user current room (if any) and joins the specified room
 
 - LEAVE
   - `REQ|LEAVE:`
-  - Leaves your current room
+  - Leaves current room
 
 - WHO
   - `REQ|WHO:`
@@ -137,7 +136,7 @@ Send all commands as requests with the `REQ|` prefix.
 
 - MSG
   - `REQ|MSG:<text>`
-  - Sends a message to your current room; delivered as a `USER` response to room members
+  - Sends a message to current room; delivered as a `USER` response to room members
 
 - PRIVMSG
   - `REQ|PRIVMSG:<recipient> <text>`
@@ -189,8 +188,8 @@ General rules:
 
 6) Private message
 - Client: `REQ|PRIVMSG:Bob Hey Bob`
-- Server to Bob: `PRIVATE|Alice|Bob|Hey Bob`
-- Echo to Alice: `PRIVATE|Alice|Bob|Hey Bob`
+- Server to Bob: `PRIVATE|Alice|Bob Hey Bob`
+- Echo to Alice: `PRIVATE|Alice|Bob Hey Bob`
 
 7) Leave and quit
 - Client: `REQ|LEAVE:`
@@ -234,7 +233,7 @@ These logs are intended to help during development and debugging.
 - Optional: room name uniqueness and richer metadata
 - Optional: persistence of users and rooms
 - Optional: authentication beyond username-only
-- The `NICK` command may be present but not fully implemented depending on your branch/version
+- The `NICK` command may be present but not implemented
 
 ---
 
@@ -251,4 +250,4 @@ Add your preferred license here (e.g., MIT, Apache-2.0).
 ---
 
 ### Contact
-If you need a sample client implementation (Java, Python, Go, or Node.js), open an issue or request an example and we’ll provide a minimal client that adheres to the protocol.
+It is just a pet project I did. Just feel free to modify as much as you want if you liked it.
