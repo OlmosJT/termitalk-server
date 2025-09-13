@@ -3,6 +3,8 @@
 #### Status
 Finalized as of Sep 13, 2025.
 
+<img width="1713" height="891" alt="image" src="https://github.com/user-attachments/assets/3723371c-805f-4059-a85b-09ade33de1a8" />
+
 ---
 
 ### What is TermiTalk?
